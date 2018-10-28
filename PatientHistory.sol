@@ -7,7 +7,7 @@ contract Hospital {
     
     event PatientCreated(address patientAddress);
     event ExaminationCreated(address examinationAddress);
-    event PayExaminationEvent(address examinationAddress);
+    event PayExamination(address examinationAddress);
     event HasResultExamination(address examinationAddress);
     
     constructor(string _name) public {
@@ -33,7 +33,7 @@ contract Hospital {
     function payExamination(address _examinationAddr) payable external {
         Examination examination = Examination(_examinationAddr);
         examination.updateState(Examination.States.Paid);
-        emit PayExaminationEvent(_examinationAddr);
+        emit PayExamination(_examinationAddr);
     }
 
     
@@ -76,6 +76,8 @@ contract Examination {
     
     function updateResult(string _newResult) public {
         require (msg.sender == hospitalAddress, "Only Hospital can write result");
+        require(state != Examination.States.Finished, "Examination is finished");
+        require(state == Examination.States.Paid, "Examination is not paid yet");
         result = _newResult;
     }
 }
