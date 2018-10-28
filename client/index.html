@@ -1,0 +1,342 @@
+<html>
+
+<head>
+  <title>Patient Chain DApp</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+    crossorigin="anonymous">
+    <style type="text/css">
+        .history-wrapper .history-item:nth-child(odd) {
+            border-top: 3px solid #aaa;
+        }
+    </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2 class="mt-3">Patient History
+      <span class="badge badge-secondary">DApp</span>
+    </h2>
+
+    <ul class="nav nav-tabs" id="myTab">
+      <li class="nav-item">
+        <a class="nav-link active" id="account-tab" data-toggle="tab" href="#panel-account">Hospital</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" id="patient-tab" data-toggle="tab" href="#panel-patient">Patient</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+            <!-- hospital tab -->
+            <div class="tab-pane show active" id="panel-account">
+                <div class="container pt-3">
+                    <button class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#modelNewHospital">create new Hospital</button>
+                    or
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelLoadHospital" onclick="Dapp.loadHospitalAddress()">load hospital at address</button>
+                    <div class="pt-3 pb-3">
+                        <h5>Hopital info:</h5>
+                        <div template-hospitalInfo></div>
+                    </div>
+                </div>
+            </div>
+          <!-- patient tab -->
+            <div class="tab-pane" id="panel-patient">
+            <div class="container pt-3 pb-3">
+                <h5>Patient address:</h5>
+
+                <div class="input-group mb-3 pt-3">
+                    <input type="text" class="form-control" id="existingPatient" placeholder="Patient's address: 0x9ffe008c97c3cf72d373cc1f19544ef04a243a15">
+                    <div class="input-group-append">
+                        <button class="btn btn-danger" type="button" onclick="Dapp.getPatient()">Search</button>
+                    </div>
+                </div>
+                <div id="patientInfo"></div>
+          </div>
+      </div>
+      
+
+      </div>
+    </div>
+  </div>
+    
+    <!-- popup update result -->
+    <div class="modal fade" id="modelUpdateResult">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Update examination result</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <form id="frmUpdateExaminationResult">
+                        <div class="form-group row">
+                            <label class="col-sm-5 col-form-label">Examination address</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="examinationAddress" class="form-control" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-5 col-form-label">Result</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="result" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="Dapp.updateExaminationResult()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- popup pay examination -->
+    <div class="modal fade" id="modelPayExamination">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Pay examination</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <form id="frmPayExamination">
+                        <div class="form-group row">
+                            <label class="col-sm-5 col-form-label">Examination address</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="examinationAddress" class="form-control" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-5 col-form-label">From address</label>
+                            <div class="col-sm-7">
+                                <input type="text" name="fromAddress" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="Dapp.payExamination()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- popup code -->
+    <div class="modal fade" id="modelNewHospital">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">New Hospital</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <form id="frmNewHospital">
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Name</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="name" class="form-control" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Owner</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="owner" class="form-control" placeholder="address use for deploy Hospital">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="Dapp.createNewHospital()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- pop up create patient -->
+    <div class="modal fade" id="modelNewPatient">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">New patient</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <form id="frmNewPatient">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Name</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="name" class="form-control" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Person address</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="personAddress" class="form-control" placeholder="address of person info(EOA)">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="Dapp.createNewPatient()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- pop up create examination -->
+    <div class="modal fade" id="modelNewExamination">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">New examination</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <form id="frmNewExamination">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Name</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="name" class="form-control" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Cost</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="cost" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Patient address</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="patientAddress" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="Dapp.createExamination()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- template hospital info -->
+    <script id="templateHospitalInfo" type="text/x-dot-template">
+        <div><strong>name:</strong> <span>{{=it.name}}</span></div>                            
+        <div><strong>address:</strong> <span>{{=it.address}}</span></div>                            
+        <div><strong>owner address:</strong> <span>{{=it.ownerAddress}}</span></div>
+        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modelNewPatient">create patient</button>
+        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modelNewExamination">create examination</button>
+        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modelUpdateResult">update result examination</button>
+    </script>
+    <!-- template -->
+    <script id="templatePatientInfo" type="text/x-dot-template">
+        <div>
+            <h3>Patient basic info</h3>
+            <div class="row">
+                <label class="col-sm-2 font-weight-bold text-right">Name</label>
+                <div class="col-sm-10">
+                    {{=it.name}}
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-2 font-weight-bold text-right">Person address</label>
+                <div class="col-sm-10">
+                    {{=it.personAddress}}
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-sm-10">
+                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modelPayExamination">Pay examination</button>
+                </label>
+            </div>
+            
+            <div class="history-wrapper">
+              {{~ it.examinations : history }}
+              <div class="history-item">
+                    <div class="row">
+                      <label class="col-sm-2 font-weight-bold text-right">Examination address</label>
+                      <div class="col-sm-10">{{=history.examinationAddress}}</div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 font-weight-bold text-right">Test</label>
+                      <div class="col-sm-10">{{=history.name}}</div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 font-weight-bold text-right">Result</label>
+                      <div class="col-sm-10">{{=history.result}}</div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 font-weight-bold text-right">Cost</label>
+                      <div class="col-sm-10">{{=history.cost}}</div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 font-weight-bold text-right">Hospital name</label>
+                      <div class="col-sm-10">{{=history.hospitalName}}</div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 font-weight-bold text-right">Hospital address</label>
+                      <div class="col-sm-10">{{=history.hospitalAddress}}</div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 font-weight-bold text-right">Date created</label>
+                      <div class="col-sm-10">{{=history.dateCreated}}</div>
+                    </div>
+
+                    <div class="row">
+                      <label class="col-sm-2 font-weight-bold text-right">Status</label>
+                      <div class="col-sm-10"><span class="badge badge-danger">{{=history.status}}</span></div>
+                    </div>
+              </div>
+              {{~}}
+            </div>
+        </div>
+    </script>
+
+  <!-- Libraries -->
+  <script src="js/web3.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+    crossorigin="anonymous"></script>
+  <script src="js/compiled_contracts.js"></script>
+  <script src="js/doT.min.js"></script>
+  <script src="js/index.js"></script>
+</body>
+
+</html>
