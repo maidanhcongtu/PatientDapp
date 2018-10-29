@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
     crossorigin="anonymous">
     <style type="text/css">
-        .history-wrapper .history-item:nth-child(odd) {
+        .history-wrapper .history-item {
             border-top: 3px solid #aaa;
         }
     </style>
@@ -272,11 +272,6 @@
                     {{=it.personAddress}}
                 </div>
             </div>
-            <div class="row">
-                <label class="col-sm-10">
-                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modelPayExamination">Pay examination</button>
-                </label>
-            </div>
             
             <div class="history-wrapper">
               {{~ it.examinations : history }}
@@ -319,6 +314,11 @@
                     <div class="row">
                       <label class="col-sm-2 font-weight-bold text-right">Status</label>
                       <div class="col-sm-10"><span class="badge badge-danger">{{=history.status}}</span></div>
+                    </div>
+                    <div class="row {{=history.status != 'Pending' ? 'd-none' : ''}}">
+                        <label class="col-sm-10">
+                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modelPayExamination">Pay examination</button>
+                        </label>
                     </div>
               </div>
               {{~}}

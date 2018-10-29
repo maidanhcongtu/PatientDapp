@@ -121,6 +121,7 @@ const Dapp = {
         var examinations = []
         for(var i = 0; i < lengthExamination; i++) {
             var arry = patient.getExaminationByIndex(i);
+            var status = arry[6] == 0 ? "Pending" : (arry[6] == 1 ? "Paid" : "Finished") ;
             examinations.push({
                 examinationAddress: patient.examinations(i),
                 name: arry[0],
@@ -129,7 +130,7 @@ const Dapp = {
                 hospitalName: arry[3],
                 hospitalAddress: arry[4],
                 dateCreated: new Date(arry[5].toNumber()),
-                status: arry[6]
+                status: status
             });
         }
         
@@ -145,24 +146,22 @@ const Dapp = {
         
         var exContract = Dapp.web3.eth.contract(compiled_contracts.Examination.abi);
         var examination = exContract.at(examinationAddress);
+
+        var hContract = Dapp.web3.eth.contract(compiled_contracts.Hospital.abi);
+        var hospital = hContract.at(examination.hospitalAddress());
         
-        examination.updateResult(
+        hospital.writeResultExamination(
+            examinationAddress,
             result,
             {
-                from: Dapp.hospitalAddress,
+                from: Dapp.hospitalOwner,
                 gas: 4700000
             }, function(e, txHash) {
                 console.log(e, txHash);
-                var payExaminationEvent = hospital.PayExaminationEvent();
-                payExaminationEvent.watch(function(error, result) {
-                    if (!error) {
-                        if (result.transactionHash == txHash) {
-                            $('#modelPayExamination').modal('hide');
-                            alert("Examination is paid successful");
-                        }
-                    }
-                    payExaminationEvent.stopWatching();
-                });
+                if (!e) {
+                        $('#modelUpdateResult').modal('hide');
+                        alert("Examination updated successful");   
+                }
             }
         )
     },
